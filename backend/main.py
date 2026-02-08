@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from backend.scraper import get_product_data
+from scraper import get_product_data
 import os
 import sys
 
