@@ -1,0 +1,36 @@
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  text-align: center;
+  border: 0.1rem solid #e5e7eb;
+  padding: 5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.title {
+  font-size: 24px;
+  font-family: "Roboto";
+  color: #0f172a;
+}
+.heroimage {
+  max-width: 220px;
+  margin: 0 auto 16px;
+  display: block;
+  opacity: 0.95;
+}
+input {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+button {
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 1rem;
+  background: #22c55e;
+  border: none;
+}
