@@ -9,11 +9,13 @@ function Home() {
   const [inputValue, setInputValue] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleBuscarProduto() {
     if (!inputValue) return alert("Cole o link do produto");
 
     setLoading(true);
+    setError("");
 
     try {
       const response = await fetch(`${API_URL}/mercadolivre`, {
@@ -50,10 +52,12 @@ function Home() {
         onChange={(e) => setInputValue(e.target.value)}
       />
 
-      <button onClick={handleBuscarProduto}>
-        {loading ? "Buscando..." : "Gerar mensagem"}
+      <button onClick={handleBuscarProduto} disabled={loading}>
+        {loading ? "Buscando produto..." : "🚀 Criar mensagem de venda"}
       </button>
 
+      {loading && <p>Buscando dados no Mercado Livre..</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       {result && <ResultCard data={result} />}
     </div>
   );
