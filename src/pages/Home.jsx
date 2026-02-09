@@ -3,7 +3,7 @@ import ResultCard from "../components/ResultCard";
 import styles from "./Home.module.css";
 import { API_URL } from "../services/api";
 
-const img = "./src/assets/Mobile.png";
+const img = "/src/assets/Mobile.png";
 
 function Home() {
   const [inputValue, setInputValue] = useState("");
