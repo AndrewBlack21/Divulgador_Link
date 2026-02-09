@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ResultCard from "../components/ResultCard";
 import styles from "./Home.module.css";
+import { API_URL } from "../services/api";
 
 const img = "./src/assets/Mobile.png";
 
@@ -15,7 +16,7 @@ function Home() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/mercadolivre", {
+      const response = await fetch(`${API_URL}/mercadolivre`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
