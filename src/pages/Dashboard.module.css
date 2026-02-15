@@ -1,0 +1,29 @@
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  text-align: center;
+  border: 0.1rem solid #e5e7eb;
+  padding: 5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.heroimage {
+  max-width: 220px;
+  margin: 0 auto;
+  display: block;
+  opacity: 0.95;
+}
+
+.title {
+  font-size: 24px;
+  font-family: "Roboto";
+  color: #0f172a;
+}
+
+.subtitle {
+  font-size: 24px;
+  font-family: "Roboto";
+  color: #0f172a;
+  font-weight: 500;
+}
