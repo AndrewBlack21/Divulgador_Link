@@ -28,6 +28,8 @@ The frontend is responsible for:
 
 ### Backend Layer (Supabase)
 
+- Python
+- Fastapi
 - Supabase Auth (JWT-based authentication)
 - PostgreSQL database
 - Row Level Security (RLS)
@@ -73,3 +75,4 @@ $$;
 create trigger on_auth_user_created
 after insert on auth.users
 for each row execute procedure public.handle_new_user();
+```
