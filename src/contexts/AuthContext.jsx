@@ -8,26 +8,54 @@ export function AuthProvider({ children }) {
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadUser() {
-      const { data } = await supabase.auth.getUser();
-      const user = data?.user ?? null;
-      setUser(user);
+  async function loadUser() {
+    try {
+      const { data, error: authError } = await supabase.auth.getUser();
 
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("plan")
-          .eq("id", user.id)
-          .single();
-
-        setPlan(profile?.plan ?? null);
+      if (authError) {
+        console.error("Erro ao buscar usuário:", authError.message);
+        setUser(null);
+        setPlan(null);
+        setLoading(false);
+        return;
       }
 
+      const currentUser = data?.user ?? null;
+      setUser(currentUser);
+
+      if (currentUser) {
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("plan")
+          .eq("id", currentUser.id)
+          .single();
+
+        if (profileError) {
+          console.error("Erro ao buscar perfil:", profileError.message);
+          setPlan(null);
+        } else {
+          setPlan(profile?.plan ?? null);
+        }
+      }
+    } catch (err) {
+      console.error("Erro inesperado no AuthContext:", err);
+      setUser(null);
+      setPlan(null);
+    } finally {
       setLoading(false);
     }
+  }
 
+  useEffect(() => {
     loadUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      loadUser();
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return (

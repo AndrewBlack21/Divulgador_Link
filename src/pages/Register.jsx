@@ -20,7 +20,8 @@ export default function Register() {
     });
 
     if (error) {
-      alert("Erro ao cadastrar");
+      console.error("Erro no cadastro:", error.message);
+      alert(error.message || "Erro ao cadastrar");
       return;
     }
 
