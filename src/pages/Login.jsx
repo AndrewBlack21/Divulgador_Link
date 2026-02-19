@@ -20,7 +20,8 @@ export default function Login() {
     });
 
     if (error) {
-      alert("Email ou senha inválidos");
+      console.error("Erro no login:", error.message);
+      alert(error.message || "Email ou senha inválidos");
       return;
     }
 

@@ -11,10 +11,16 @@ export default function ChoosePlan() {
   const navigate = useNavigate();
 
   async function selectPlan(plan) {
-    await supabase.from("profiles").upsert({
+    const { error } = await supabase.from("profiles").upsert({
       id: user.id,
       plan,
     });
+
+    if (error) {
+      console.error("Erro ao salvar plano:", error.message);
+      alert("Erro ao salvar plano. Tente novamente.");
+      return;
+    }
 
     navigate("/home");
   }
