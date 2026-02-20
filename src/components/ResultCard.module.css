@@ -1,4 +1,4 @@
-textarea {
+.result {
   width: 100%;
   min-height: 140px;
   margin-top: 16px;
@@ -9,15 +9,28 @@ textarea {
   resize: none;
 }
 
-strong {
+.title {
   font-size: 18px;
   font-family: "Roboto";
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
-p {
+.price {
   font-size: 16px;
+  margin: 8px 0 0;
 }
 
+.message {
+  width: 100%;
+  min-height: 140px;
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  resize: none;
+}
 .copy {
   width: 100%;
   margin-top: 16px;

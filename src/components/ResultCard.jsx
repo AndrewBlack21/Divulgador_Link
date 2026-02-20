@@ -16,13 +16,13 @@ ${data.affiliateLink}
   }
 
   return (
-    <div>
-      <p>
+    <div className={styles.result}>
+      <p className={styles.title}>
         <strong>{data.title}</strong>
       </p>
-      <p>{data.price}</p>
+      <p className={styles.price}>{data.price}</p>
 
-      <textarea value={message} readOnly />
+      <textarea className={styles.message} value={message} readOnly />
 
       <button className={styles.copy} onClick={copyMessage}>
         Copiar mensagem

@@ -34,7 +34,7 @@ function Home() {
 
       const data = await response.json();
       setResult(data);
-    } catch (error) {
+    } catch {
       alert("Erro ao buscar produto");
     } finally {
       setLoading(false);
