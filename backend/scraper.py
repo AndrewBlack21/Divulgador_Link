@@ -1,6 +1,7 @@
 import json
 import re
 from decimal import Decimal, InvalidOperation
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -44,6 +45,17 @@ def _fetch_page(url):
     return response
 
 
+def _fetch_json(url, *, headers=None):
+    response = requests.get(
+        url,
+        headers=headers or HEADERS,
+        timeout=15,
+        allow_redirects=True,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
 def _extract_from_json_ld(soup):
     scripts = soup.find_all("script", type="application/ld+json")
 
@@ -69,22 +81,6 @@ def _extract_from_json_ld(soup):
             title = entry.get("name") or NOT_FOUND
             offers = entry.get("offers") or {}
 
-            if isinstance(offers, list) and offers:
-                offers = offers[0]
-
-            price = offers.get("price") if isinstance(offers, dict) else None
-            return title, _format_price(price)
-
-    return None, None
-
-
-def _extract_from_meta(soup):
-    title = None
-    price = None
-
-    title_meta = soup.find("meta", property="og:title") or soup.find("meta", attrs={"name": "title"})
-    if title_meta:
-        title = title_meta.get("content")
 
     price_meta = (
         soup.find("meta", property="product:price:amount")
@@ -111,10 +107,18 @@ def _extract_shopee_embedded_json(soup):
     ]
 
     price_patterns = [
-        r'"price"\s*:\s*"?(\d+[\.,]?\d*)"?',
-        r'"price_min"\s*:\s*"?(\d+[\.,]?\d*)"?',
-        r'"price_max"\s*:\s*"?(\d+[\.,]?\d*)"?',
+        r'"price"\s*:\s*"?(\d+(?:[\.,]\d+)?)"?',
+        r'"price_min"\s*:\s*"?(\d+(?:[\.,]\d+)?)"?',
+        r'"price_max"\s*:\s*"?(\d+(?:[\.,]\d+)?)"?',
     ]
+
+    invalid_title_tokens = {
+        "shopee__domain",
+        "shopee__",
+        "default_title",
+        "meta_title",
+        "shopee brasil",
+    }
 
     for script in possible_scripts:
         content = script.string or script.get_text() or ""
@@ -125,7 +129,13 @@ def _extract_shopee_embedded_json(soup):
             for pattern in patterns:
                 match = re.search(pattern, content)
                 if match:
-                    title = match.group(1).replace("\\u0026", "&")
+                    candidate_title = match.group(1).replace("\\u0026", "&").strip()
+                    lowered_candidate = candidate_title.lower()
+                    if any(token in lowered_candidate for token in invalid_title_tokens):
+                        continue
+                    if len(candidate_title) < 10:
+                        continue
+                    title = candidate_title
                     break
 
         if price is None:
@@ -135,9 +145,9 @@ def _extract_shopee_embedded_json(soup):
                     raw_value = match.group(1)
                     try:
                         numeric = Decimal(raw_value.replace(",", "."))
-                        # Alguns payloads da Shopee trazem centavos multiplicados por 100000.
-                        while numeric > 100000:
-                            numeric = numeric / 100
+                        # Alguns payloads da Shopee trazem 47.00 como 4700000.
+                        if "." not in raw_value and "," not in raw_value and numeric >= 100000:
+                            numeric = numeric / 100000
                         price = _format_price(numeric)
                     except Exception:
                         price = _format_price(raw_value)
@@ -147,6 +157,46 @@ def _extract_shopee_embedded_json(soup):
             break
 
     return title, price
+
+
+def _extract_shopee_ids(url):
+    parsed_url = urlparse(url)
+    path = parsed_url.path
+
+    # URLs mais comuns: /...-i.<shopid>.<itemid> ou /product/<shopid>/<itemid>
+    match = re.search(r"-i\.(\d+)\.(\d+)", path)
+    if match:
+        return match.group(1), match.group(2)
+
+    match = re.search(r"/product/(\d+)/(\d+)", path)
+    if match:
+        return match.group(1), match.group(2)
+
+    return None, None
+
+
+def _fetch_shopee_product_from_api(url):
+    shop_id, item_id = _extract_shopee_ids(url)
+    if not shop_id or not item_id:
+        return None, None
+
+    api_url = f"https://shopee.com.br/api/v4/item/get?itemid={item_id}&shopid={shop_id}"
+
+    api_headers = {
+        **HEADERS,
+        "Referer": url,
+        "X-Requested-With": "XMLHttpRequest",
+    }
+
+    payload = _fetch_json(api_url, headers=api_headers)
+    item = (payload or {}).get("data") or {}
+
+    title = item.get("name")
+    price_value = item.get("price_min") or item.get("price")
+    if price_value is not None:
+        price_value = Decimal(price_value) / 100000
+
+    return title, _format_price(price_value) if price_value is not None else None
 
 
 def get_product_data(url):
@@ -169,11 +219,28 @@ def get_product_data(url):
 
 
 def get_shopee_product_data(url):
+    final_url = url
+
+    try:
+        title, price = _fetch_shopee_product_from_api(url)
+    except Exception:
+        title, price = None, None
+
+    if title and price and price != NOT_FOUND_PRICE:
+        return {
+            "title": title,
+            "price": price,
+            "final_url": final_url,
+        }
+
     response = _fetch_page(url)
     final_url = response.url
     soup = BeautifulSoup(response.text, "html.parser")
 
-    title, price = _extract_from_json_ld(soup)
+    if not title or not price or price == NOT_FOUND_PRICE:
+        ld_title, ld_price = _extract_from_json_ld(soup)
+        title = title or ld_title
+        price = price if price and price != NOT_FOUND_PRICE else ld_price
 
     if not title or not price or price == NOT_FOUND_PRICE:
         meta_title, meta_price = _extract_from_meta(soup)
