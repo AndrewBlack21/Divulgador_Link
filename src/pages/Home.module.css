@@ -41,6 +41,37 @@ button {
   border: none;
   margin: 0.1rem;
 }
+.marketSwitcher {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.marketButton {
+  width: 100%;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 0.8rem;
+  border: 1px solid #d1d5db;
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.activeMarket {
+  background: #22c55e;
+  color: #fff;
+  border-color: #22c55e;
+}
+.container button {
+  width: 100%;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 1rem;
+  background: #22c55e;
+  border: none;
+  margin: 0.1rem;
+}
 
 @media (max-width: 600px) {
   .container {

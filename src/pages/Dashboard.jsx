@@ -21,7 +21,13 @@ export default function Dashboard() {
             Voce pode gerar ate 10 links por dia.
           </p>
 
-          <button onClick={() => navigate("/home")}>Gerar Link</button>
+          <button onClick={() => navigate("/home?market=mercadolivre")}>
+            Gerar Link Mercado Livre
+          </button>
+
+          <button onClick={() => navigate("/home?market=shopee")}>
+            Gerar Link Shopee
+          </button>
 
           <button onClick={() => navigate("/choose-plan")}>
             Fazer upgrade pra Pro
@@ -33,8 +39,12 @@ export default function Dashboard() {
         <>
           <p>Links ilimitados</p>
 
-          <button onClick={() => navigate("/home")}>
-            Gerar Link Ilimitado
+          <button onClick={() => navigate("/home?market=mercadolivre")}>
+            Gerar Link Mercado Livre
+          </button>
+
+          <button onClick={() => navigate("/home?market=shopee")}>
+            Gerar Link Shopee
           </button>
 
           <button onClick={() => navigate("/choose-plan")}>
