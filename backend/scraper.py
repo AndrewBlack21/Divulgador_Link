@@ -1,54 +1,46 @@
+import re
 import requests
-from bs4 import BeautifulSoup
-import json
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
-    "Accept-Language": "pt-BR,pt;q=0.9"
-}
+MELI_API_BASE_URL = "https://api.mercadolibre.com"
 
-def get_product_data(url):
-    # 🔥 segue redirects (link afiliado → produto real)
-    response = requests.get(
-        url,
-        headers=HEADERS,
-        timeout=10,
-        allow_redirects=True
-    )
 
-    final_url = response.url  # URL REAL DO PRODUTO
-    soup = BeautifulSoup(response.text, "html.parser")
+def _extract_item_id(url: str) -> str | None:
+    """Extrai o ID do item (ex.: MLB1234567890) a partir de uma URL do Mercado Livre."""
+    if not url:
+        return None
 
-    # 🔎 busca JSON-LD
-    scripts = soup.find_all("script", type="application/ld+json")
+    match = re.search(r"(MLB\d+)", url.upper())
+    if match:
+        return match.group(1)
 
-    for script in scripts:
-        try:
-            data = json.loads(script.string)
+    return None
 
-            if isinstance(data, dict) and data.get("@type") == "Product":
-                title = data.get("name", "Produto não encontrado")
 
-                offers = data.get("offers", {})
-                price = offers.get("price")
+def _format_price(price: float | int | None, currency: str | None) -> str:
+    if price is None:
+        return "Preço não encontrado"
 
-                price = f"R$ {price}" if price else "Preço não encontrado"
+    currency_symbol = "R$" if currency == "BRL" else (currency or "")
+    return f"{currency_symbol} {price:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-                return {
-                    "title": title,
-                    "price": price,
-                    "final_url": final_url
-                }
 
-        except Exception:
-            continue
+def get_product_data(url: str) -> dict:
+    item_id = _extract_item_id(url)
+
+    if not item_id:
+        raise ValueError("Não foi possível identificar o código do produto na URL enviada.")
+
+    response = requests.get(f"{MELI_API_BASE_URL}/items/{item_id}", timeout=10)
+    response.raise_for_status()
+
+    data = response.json()
+
+    title = data.get("title", "Produto não encontrado")
+    price = _format_price(data.get("price"), data.get("currency_id"))
+    permalink = data.get("permalink") or url
 
     return {
-        "title": "Produto não encontrado",
-        "price": "Preço não encontrado",
-        "final_url": final_url
+        "title": title,
+        "price": price,
+        "final_url": permalink,
     }
