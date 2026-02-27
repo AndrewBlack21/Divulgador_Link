@@ -5,13 +5,14 @@ MELI_API_BASE_URL = "https://api.mercadolibre.com"
 
 
 def _extract_item_id(url: str) -> str | None:
-    """Extrai o ID do item (ex.: MLB1234567890) a partir de uma URL do Mercado Livre."""
+    """Extrai o ID do item (ex.: MLB21263763) a partir de uma URL do Mercado Livre."""
     if not url:
         return None
 
-    match = re.search(r"(MLB\d+)", url.upper())
+    # Procura por MLB seguido de 8 a 12 dígitos
+    match = re.search(r"MLB-?(\d{8,12})", url.upper())
     if match:
-        return match.group(1)
+        return f"MLB{match.group(1)}"
 
     return None
 

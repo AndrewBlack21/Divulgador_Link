@@ -27,9 +27,10 @@ def mercadolivre(data: ProductRequest):
             "affiliateLink": product["final_url"],
         }
     except ValueError as e:
-        raise HTTPException(status_code=422, detail=str(e)) from e
+        raise HTTPException(status_code=422, detail=str(e))
     except Exception as e:
+        # Mudança aqui: retorne o erro real para debug
         raise HTTPException(
             status_code=400,
-            detail="Erro ao buscar produto na API do Mercado Livre",
-        ) from e
+            detail=f"Erro interno: {str(e)}",
+        )

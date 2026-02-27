@@ -12,10 +12,14 @@ function Home() {
   const [error, setError] = useState("");
 
   async function handleBuscarProduto() {
-    if (!inputValue) return alert("Cole o link do produto");
+    if (!inputValue.trim()) {
+      setError("Cole o link do produto.");
+      return;
+    }
 
     setLoading(true);
     setError("");
+    setResult(null);
 
     try {
       const response = await fetch(`${API_URL}/mercadolivre`, {
@@ -24,18 +28,21 @@ function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          url: inputValue,
+          url: inputValue.trim(),
         }),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        throw new Error("Erro na requisição");
+        const errorMessage =
+          data?.detail || `Erro na requisição (${response.status})`;
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
       setResult(data);
-    } catch {
-      alert("Erro ao buscar produto");
+    } catch (err) {
+      setError(err.message || "Erro ao buscar produto");
     } finally {
       setLoading(false);
     }
@@ -62,5 +69,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;
