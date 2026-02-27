@@ -31,7 +31,14 @@ def get_product_data(url: str) -> dict:
     if not item_id:
         raise ValueError("Não foi possível identificar o código do produto na URL enviada.")
 
-    response = requests.get(f"{MELI_API_BASE_URL}/items/{item_id}", timeout=10)
+    # Busca o token configurado no ambiente
+    token = os.getenv("MELI_TOKEN")
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    # Passa o cabeçalho com o token na requisição
+    response = requests.get(f"{MELI_API_BASE_URL}/items/{item_id}", headers=headers, timeout=10)
     response.raise_for_status()
 
     data = response.json()
