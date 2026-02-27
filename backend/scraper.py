@@ -1,5 +1,6 @@
 import re
 import requests
+import os
 
 MELI_API_BASE_URL = "https://api.mercadolibre.com"
 
