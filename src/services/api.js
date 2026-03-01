@@ -1,1 +1,1 @@
-export const API_URL = "https://divulgador-link.onrender.com";
+export const API_URL = "https://divulgador-link-1.onrender.com";
