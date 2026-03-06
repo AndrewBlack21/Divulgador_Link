@@ -1,15 +1,100 @@
-.container {
-  max-width: 500px;
-  margin: 60px auto;
-  text-align: center;
-  border: 0.1rem solid #e5e7eb;
-  padding: 5rem;
-  border-radius: 1rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+/* ChoosePlan-specific extras */
+
+.plans {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 4px;
 }
-.heroimage {
-  max-width: 220px;
-  margin: 0 auto 16px;
-  display: block;
-  opacity: 0.95;
+
+@media (max-width: 480px) {
+  .plans {
+    grid-template-columns: 1fr;
+  }
+}
+
+.planCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  padding: 20px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.planCardPro {
+  border-color: rgba(255, 200, 0, 0.35);
+  background: rgba(255, 200, 0, 0.04);
+  box-shadow: 0 0 24px rgba(255, 200, 0, 0.07);
+}
+
+.proTag {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffc800;
+  color: #0a0a0f;
+  font-family: "Syne", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.planHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.planName {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(240, 237, 232, 0.4);
+}
+
+.planPrice {
+  font-family: "Syne", sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #f0ede8;
+  line-height: 1;
+}
+.planPrice small {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(240, 237, 232, 0.38);
+  margin-left: 2px;
+}
+
+.proPriceColor {
+  color: #ffc800;
+}
+
+.planFeatures {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+}
+
+.planFeatures li {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: rgba(240, 237, 232, 0.65);
+  line-height: 1.4;
+}
+
+.disabled {
+  color: rgba(240, 237, 232, 0.22) !important;
+  text-decoration: line-through;
 }

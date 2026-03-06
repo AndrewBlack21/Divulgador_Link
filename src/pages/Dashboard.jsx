@@ -1,47 +1,81 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import styles from "./Dashboard.module.css";
-import img from "../assets/Mobile.png";
+import s from "./shared.module.css";
+import ds from "./Dashboard.module.css";
 
 export default function Dashboard() {
   const { user, plan } = useAuth();
   const navigate = useNavigate();
 
+  const isFree = plan === "free";
+  const isPro = plan === "pro";
+
   return (
-    <div className={styles.container}>
-      <img src={img} alt="" className={styles.heroimage} />
-      <h1 className={styles.title}>Dashboard</h1>
+    <div className={s.page}>
+      <div className={s.card}>
+        <div className={s.badge}>{isPro ? "⚡ Plano PRO" : "Plano FREE"}</div>
 
-      <p className={styles.subtitle}>Usuario: {user?.email}</p>
-      <p className={styles.subtitle}>Plano: {plan?.toUpperCase()}</p>
+        <h1 className={s.heading}>
+          Seu
+          <br />
+          <span className={s.accent}>Dashboard</span>
+        </h1>
+        <p className={s.sub}>// Painel de controle da sua conta</p>
 
-      {plan === "free" && (
-        <>
-          <p className={styles.subtitle}>
-            Voce pode gerar ate 10 links por dia.
-          </p>
+        <div className={s.divider} />
 
-          <button onClick={() => navigate("/home")}>Gerar Link</button>
+        {/* User info */}
+        <div className={ds.infoBox}>
+          <div className={ds.infoRow}>
+            <span className={ds.infoKey}>Usuário</span>
+            <span className={ds.infoVal}>{user?.email}</span>
+          </div>
+          <div className={ds.infoRow}>
+            <span className={ds.infoKey}>Plano</span>
+            <span className={`${ds.infoVal} ${isPro ? ds.pro : ds.free}`}>
+              {plan?.toUpperCase()}
+            </span>
+          </div>
+          {isFree && (
+            <div className={ds.infoRow}>
+              <span className={ds.infoKey}>Limite</span>
+              <span className={ds.infoVal}>10 links / dia</span>
+            </div>
+          )}
+          {isPro && (
+            <div className={ds.infoRow}>
+              <span className={ds.infoKey}>Limite</span>
+              <span className={ds.infoVal}>Ilimitado ✓</span>
+            </div>
+          )}
+        </div>
 
-          <button onClick={() => navigate("/choose-plan")}>
-            Fazer upgrade pra Pro
+        <div className={ds.actions}>
+          <button className={s.btn} onClick={() => navigate("/home")}>
+            🚀 {isPro ? "Gerar Link Ilimitado" : "Gerar Link"}
           </button>
-        </>
-      )}
 
-      {plan === "pro" && (
-        <>
-          <p>Links ilimitados</p>
+          {isFree && (
+            <button
+              className={s.btnGhost}
+              onClick={() => navigate("/choose-plan")}
+            >
+              ⚡ Fazer upgrade para PRO
+            </button>
+          )}
 
-          <button onClick={() => navigate("/home")}>
-            Gerar Link Ilimitado
-          </button>
+          {isPro && (
+            <button
+              className={s.btnGhost}
+              onClick={() => navigate("/choose-plan")}
+            >
+              Gerenciar plano
+            </button>
+          )}
+        </div>
 
-          <button onClick={() => navigate("/choose-plan")}>
-            Gerenciar Plano
-          </button>
-        </>
-      )}
+        <p className={s.stamp}>DIVULGA PRO · v2.0</p>
+      </div>
     </div>
   );
 }

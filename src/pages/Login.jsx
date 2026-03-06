@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../services/supabase";
-
-// Styles
-import styles from "./Login.module.css";
-import img from "../assets/Mobile.png";
+import s from "./shared.module.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   async function handleLogin(e) {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -20,7 +21,8 @@ export default function Login() {
     });
 
     if (error) {
-      alert("Email ou senha inválidos");
+      setError("Email ou senha inválidos.");
+      setLoading(false);
       return;
     }
 
@@ -28,28 +30,63 @@ export default function Login() {
   }
 
   return (
-    <form className={styles.container} onSubmit={handleLogin}>
-      <img src={img} alt="" className={styles.heroimage} />
-      <h1 className={styles.title}>Login</h1>
+    <div className={s.page}>
+      <form className={s.card} onSubmit={handleLogin} noValidate>
+        <div className={s.badge}>Área de acesso</div>
 
-      <input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <h1 className={s.heading}>
+          Bem-vindo
+          <br />
+          <span className={s.accent}>de volta</span>
+        </h1>
+        <p className={s.sub}>// Entre com sua conta para continuar</p>
 
-      <input
-        type="password"
-        placeholder="Senha"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <div className={s.divider} />
 
-      <button type="submit">Entrar</button>
+        <p className={s.label}>Email</p>
+        <div className={s.inputWrap}>
+          <span className={s.inputIcon}>✉</span>
+          <input
+            className={s.input}
+            type="email"
+            placeholder="seu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-      <p>
-        Não tem conta? <Link to="/register">Criar agora</Link>
-      </p>
-    </form>
+        <p className={s.label}>Senha</p>
+        <div className={s.inputWrap}>
+          <span className={s.inputIcon}>🔒</span>
+          <input
+            className={s.input}
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        {error && <p className={s.error}>⚠ {error}</p>}
+
+        <button className={s.btn} type="submit" disabled={loading}>
+          {loading ? "Entrando..." : "Entrar →"}
+        </button>
+
+        {loading && (
+          <div className={s.loadBar}>
+            <div className={s.loadFill} />
+          </div>
+        )}
+
+        <p className={s.footnote}>
+          Não tem conta? <Link to="/register">Criar agora</Link>
+        </p>
+
+        <p className={s.stamp}>DIVULGA PRO · v2.0</p>
+      </form>
+    </div>
   );
 }

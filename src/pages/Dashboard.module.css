@@ -1,29 +1,51 @@
-.container {
-  max-width: 500px;
-  margin: 60px auto;
-  text-align: center;
-  border: 0.1rem solid #e5e7eb;
-  padding: 5rem;
-  border-radius: 1rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+/* Dashboard-specific extras */
+
+.infoBox {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 3px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.heroimage {
-  max-width: 220px;
-  margin: 0 auto;
-  display: block;
-  opacity: 0.95;
+.infoRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.title {
-  font-size: 24px;
-  font-family: "Roboto";
-  color: #0f172a;
+.infoKey {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(240, 237, 232, 0.35);
+  flex-shrink: 0;
 }
 
-.subtitle {
-  font-size: 24px;
-  font-family: "Roboto";
-  color: #0f172a;
-  font-weight: 500;
+.infoVal {
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  color: #f0ede8;
+  text-align: right;
+  word-break: break-all;
+}
+
+.free {
+  color: rgba(240, 237, 232, 0.55);
+}
+
+.pro {
+  color: #ffc800;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
